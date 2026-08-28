@@ -2,7 +2,7 @@
   "name": "Find the Imposter",
   "short_name": "Imposter",
   "description": "The ultimate free party game — find out who's bluffing!",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#0a0a0f",
   "theme_color": "#0a0a0f",
