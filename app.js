@@ -506,11 +506,10 @@ function updateGameScreen() {
     `;
   }
 
-  // Hide both buttons
-  document.getElementById('btn-got-it-card').classList.add('hidden');
-  const nextBtn = document.getElementById('btn-next-player');
-  nextBtn.classList.add('hidden');
-  nextBtn.textContent = (idx >= game.playerCount - 1) ? '🗣️ Start Discussion' : '👉 Next Player';
+  // Hide Got It button and set appropriate text
+  const gotItBtn = document.getElementById('btn-got-it-card');
+  gotItBtn.classList.add('hidden');
+  gotItBtn.textContent = (idx >= game.playerCount - 1) ? '✓ Got it (Start Discussion)' : '✓ Got it (Next Player)';
 }
 
 function handleCardTap() {
@@ -521,34 +520,16 @@ function handleCardTap() {
     // Reveal the card — it STAYS revealed
     card.classList.add('flipped');
     game.cardRevealed = true;
-    document.getElementById('game-instruction').textContent = 'Memorize your role, then tap "Got it"';
+    document.getElementById('game-instruction').textContent = 'Memorize your role, then tap below';
 
     // Show the "Got it" button
     document.getElementById('btn-got-it-card').classList.remove('hidden');
   }
-  // If already revealed, do nothing — card stays visible
 }
 
 function handleGotIt() {
-  if (!game.cardRevealed || game.cardConfirmed) return;
+  if (!game.cardRevealed) return;
 
-  game.cardConfirmed = true;
-
-  // Flip card back
-  const card = document.getElementById('game-card');
-  card.classList.remove('flipped');
-
-  // Hide "Got it" button
-  document.getElementById('btn-got-it-card').classList.add('hidden');
-
-  // Update instruction
-  document.getElementById('game-instruction').textContent = 'Pass the phone to the next player';
-
-  // Show "Next Player" button
-  document.getElementById('btn-next-player').classList.remove('hidden');
-}
-
-function handleNextPlayer() {
   game.currentPlayerIndex++;
 
   if (game.currentPlayerIndex >= game.playerCount) {
@@ -563,7 +544,6 @@ function handleNextPlayer() {
 function gameScreenHandlers() {
   document.getElementById('game-card').addEventListener('click', handleCardTap);
   document.getElementById('btn-got-it-card').addEventListener('click', handleGotIt);
-  document.getElementById('btn-next-player').addEventListener('click', handleNextPlayer);
 }
 
 // ==========================================
