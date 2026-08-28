@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Imposter">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="description" content="Find the Imposter — the ultimate free party game. Pass the phone, flip cards, and figure out who's bluffing!">
+
+  <title>Find the Imposter</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-192.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+  <!-- ========== ANIMATED BACKGROUND ========== -->
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- ========== SCREEN: HOME ========== -->
+  <section id="screen-home" class="screen active">
+    <div class="screen-content">
+      <div class="home-logo">🕵️</div>
+      <h1 class="home-title">Find the<br><span class="gradient-text">Imposter</span></h1>
+      <p class="home-subtitle">The ultimate party game</p>
+
+      <div class="home-actions">
+        <button class="btn btn-primary btn-lg" id="btn-start-game">
+          Start Game
+        </button>
+        <button class="btn btn-ghost" id="btn-how-to-play">
+          How to Play
+        </button>
+      </div>
+
+      <div class="install-hint">
+        📱 <strong>Tip:</strong> Tap <strong>Share → Add to Home Screen</strong> in Safari to install as an app!
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SCREEN: HOW TO PLAY ========== -->
+  <section id="screen-howto" class="screen">
+    <div class="screen-content">
+      <div class="screen-header">
+        <button class="btn-back" id="btn-back-howto">←</button>
+        <h2>How to Play</h2>
+      </div>
+
+      <div class="rules-grid">
+        <div class="rule-card">
+          <div class="rule-number">1</div>
+          <div class="rule-text">
+            <h4>👥 Gather Your Group</h4>
+            <p>Get 3–15 players together. One phone is all you need!</p>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-number">2</div>
+          <div class="rule-text">
+            <h4>⚙️ Choose Settings</h4>
+            <p>Pick number of players, imposters, and a word category.</p>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-number">3</div>
+          <div class="rule-text">
+            <h4>🃏 Flip Your Card</h4>
+            <p>Each player taps to see their secret word. One (or more) will see <strong>"IMPOSTER"</strong> instead!</p>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-number">4</div>
+          <div class="rule-text">
+            <h4>🗣️ Discuss & Describe</h4>
+            <p>Take turns describing the word vaguely. The imposter must bluff without knowing the word!</p>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-number">5</div>
+          <div class="rule-text">
+            <h4>🗳️ Vote & Reveal</h4>
+            <p>Vote on who you think the imposter is, then reveal the truth!</p>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-lg" id="btn-got-it">
+        Got it!
+      </button>
+    </div>
+  </section>
+
+  <!-- ========== SCREEN: SETUP ========== -->
+  <section id="screen-setup" class="screen">
+    <div class="screen-content">
+      <div class="screen-header">
+        <button class="btn-back" id="btn-back-setup">←</button>
+        <h2>Game Setup</h2>
+      </div>
+
+      <!-- Player Count -->
+      <div class="setup-section">
+        <div class="setup-label">
+          <span>👥 Players</span>
+        </div>
+        <div class="counter">
+          <button class="counter-btn" id="btn-players-minus">−</button>
+          <span class="counter-value" id="player-count">4</span>
+          <button class="counter-btn" id="btn-players-plus">+</button>
+        </div>
+      </div>
+
+      <!-- Imposter Count -->
+      <div class="setup-section">
+        <div class="setup-label">
+          <span>🕵️ Imposters</span>
+        </div>
+        <div class="counter">
+          <button class="counter-btn" id="btn-imposters-minus">−</button>
+          <span class="counter-value" id="imposter-count">1</span>
+          <button class="counter-btn" id="btn-imposters-plus">+</button>
+        </div>
+      </div>
+
+      <!-- Category Selection -->
+      <div class="setup-section">
+        <div class="setup-label">
+          <span>📂 Word Category</span>
+        </div>
+        <div class="category-grid" id="category-grid">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Custom Words (shown when custom category is selected) -->
+      <div class="setup-section hidden" id="custom-words-section">
+        <div class="setup-label">
+          <span>✏️ Your Custom Words</span>
+        </div>
+        <textarea class="custom-textarea" id="custom-words-input"
+                  placeholder="Enter words, one per line...&#10;Pizza&#10;Sushi&#10;Tacos"></textarea>
+        <p class="custom-words-info">One word per line. Minimum 1 word needed.</p>
+        <button class="btn btn-sm btn-ghost" id="btn-save-custom" style="margin-top: 8px;">
+          💾 Save Words
+        </button>
+      </div>
+
+      <!-- Player Names (optional) -->
+      <div class="setup-section">
+        <button class="btn btn-ghost btn-sm" id="btn-toggle-names" style="width: 100%;">
+          Add Player Names (Optional)
+        </button>
+        <div id="player-names-section" class="hidden">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <button class="btn btn-primary btn-lg" id="btn-start-round">
+        🎲 Start Round
+      </button>
+    </div>
+  </section>
+
+  <!-- ========== SCREEN: GAME (CARD FLIP) ========== -->
+  <section id="screen-game" class="screen">
+    <div class="screen-content">
+      <!-- Progress dots -->
+      <div class="game-header">
+        <div class="player-progress" id="player-progress">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <h2 class="player-turn-name" id="current-player-name">Player 1's Turn</h2>
+      <p class="game-instruction" id="game-instruction">Tap the card to reveal your role</p>
+
+      <div class="card-container">
+        <div class="card" id="game-card">
+          <div class="card-inner">
+            <!-- Front (face down) -->
+            <div class="card-front">
+              <span class="card-front-icon">❓</span>
+              <span class="card-front-text">Tap to Reveal</span>
+            </div>
+            <!-- Back (revealed) -->
+            <div class="card-back" id="card-back-content">
+              <span class="card-role-emoji">✨</span>
+              <span class="card-role-label">Your word is</span>
+              <span class="card-role-word">WORD</span>
+              <span class="card-role-hint">Don't give it away!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-lg hidden" id="btn-next-player">
+        👉 Next Player
+      </button>
+    </div>
+  </section>
+
+  <!-- ========== SCREEN: DISCUSSION ========== -->
+  <section id="screen-discuss" class="screen">
+    <div class="screen-content">
+      <div class="discuss-icon">🗣️</div>
+      <h2>Time to Discuss!</h2>
+      <p class="discuss-subtitle">
+        Take turns describing the word.<br>
+        The imposter must blend in!
+      </p>
+
+      <div class="discuss-tips">
+        <div class="tip-card">
+          <span class="tip-emoji">💡</span>
+          <span>Be vague enough that the imposter can't guess the word</span>
+        </div>
+        <div class="tip-card">
+          <span class="tip-emoji">🔍</span>
+          <span>Watch for people who are too vague or copy others</span>
+        </div>
+      </div>
+
+      <div class="timer-container">
+        <div class="timer-circle">
+          <span class="timer-display" id="timer-display">2:00</span>
+        </div>
+        <div class="timer-controls">
+          <button class="btn btn-sm btn-ghost" id="btn-timer-toggle">Start Timer</button>
+          <button class="btn btn-sm btn-ghost" id="btn-timer-reset">Reset</button>
+        </div>
+      </div>
+
+      <button class="btn btn-danger btn-lg" id="btn-reveal-imposter">
+        🔍 Reveal the Imposter
+      </button>
+    </div>
+  </section>
+
+  <!-- ========== SCREEN: RESULTS ========== -->
+  <section id="screen-results" class="screen">
+    <div class="screen-content">
+      <div class="confetti-container" id="confetti-container" aria-hidden="true"></div>
+
+      <h2 class="results-title">The Imposter was...</h2>
+
+      <div id="imposter-reveal">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="word-reveal-section">
+        <p class="word-label">The word was</p>
+        <h3 class="word-value" id="word-reveal">???</h3>
+      </div>
+
+      <div class="results-actions">
+        <button class="btn btn-primary btn-lg" id="btn-play-again">
+          🔄 Play Again
+        </button>
+        <button class="btn btn-ghost" id="btn-new-game">
+          ⚙️ New Game
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
