@@ -1,5 +1,5 @@
 // Service Worker for Find the Imposter — Network First Strategy
-const CACHE_NAME = 'imposter-v6';
+const CACHE_NAME = 'imposter-v7';
 const ASSETS = [
   './',
   './index.html',
