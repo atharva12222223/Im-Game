@@ -67,6 +67,257 @@ const WORD_BANK = {
 };
 
 // ==========================================
+// SMART HINTS & INTEL DICTIONARY
+// ==========================================
+const WORD_HINTS = {
+  // Food & Drinks
+  'Pizza': 'Italian oven-baked flatbread with savory toppings',
+  'Sushi': 'Japanese specialty prepared with vinegared rice and seafood',
+  'Tacos': 'Mexican street food folded inside a crisp or soft tortilla',
+  'Burger': 'Grilled patty served inside a round sliced bun',
+  'Pasta': 'Classic boiled Italian wheat dough served with sauce',
+  'Pancakes': 'Flat golden breakfast cakes stacked with butter and syrup',
+  'Ice Cream': 'Chilled sweet dairy treat served in cones or bowls',
+  'Chocolate': 'Rich confection made from roasted cacao beans',
+  'Coffee': 'Dark brewed morning beverage packed with caffeine',
+  'Avocado': 'Creamy green fruit used to make guacamole',
+  'Steak': 'High-end cut of beef cooked to your preferred temperature',
+  'Fries': 'Crispy deep-fried salted potato batons',
+  'Donut': 'Fried sweet dough ring glazed with sugar or sprinkles',
+  'Croissant': 'Flaky, buttery French crescent-shaped morning pastry',
+  'Ramen': 'Japanese broth bowl with wheat noodles, egg and toppings',
+  'Curry': 'Fragrant spiced sauce dish commonly served with warm rice',
+  'Nachos': 'Crunchy tortilla chips smothered in melted cheese',
+  'Milkshake': 'Thick blended dessert beverage of ice cream and flavor',
+  'Popcorn': 'Puffed buttery corn kernels enjoyed at movie theaters',
+  'Pretzel': 'Knot-twisted baked pastry sprinkled with coarse salt',
+  'Cheesecake': 'Decadent sweet dessert with cream cheese on graham crust',
+  'Lobster': 'Luxury ocean crustacean served with melted garlic butter',
+  'Waffles': 'Grid-patterned breakfast cakes with crispy pockets for syrup',
+  'Smoothie': 'Thick blended fruit, yogurt and ice drink',
+  'Kebab': 'Seasoned meat grilled on skewers over open flame',
+  'Pho': 'Aromatic Vietnamese noodle soup with rich herbal broth',
+  'Dumpling': 'Steamed or fried dough pockets filled with meat or veggies',
+  'Tiramisu': 'Espresso-soaked Italian dessert layered with mascarpone',
+  'Burrito': 'Large flour tortilla tightly wrapped around hearty fillings',
+  'Mochi': 'Soft and chewy sweet Japanese pounded rice dessert',
+
+  // Movies
+  'Titanic': 'Doomed luxury ocean liner and tragic romantic drama',
+  'Avatar': 'Blue alien civilization on the distant planet Pandora',
+  'Inception': 'Master thieves infiltrating dreams within dreams',
+  'Jaws': 'Giant killer great white shark terrorizing summer beachgoers',
+  'Rocky': 'Underdog Philadelphia boxer fighting for the championship',
+  'Frozen': 'Magical ice queen with singing snowman sister',
+  'Batman': 'Vigilante Dark Knight protecting the shadows of Gotham',
+  'Shrek': 'Green swamp ogre accompanied by a talkative donkey',
+  'Joker': 'Iconic clown-faced Gotham villain descending into chaos',
+  'Gladiator': 'Betrayed Roman general seeking vengeance in the Colosseum',
+  'Alien': 'Deadly extraterrestrial creature stalking a spaceship crew',
+  'Parasite': 'Cunning lower-class family infiltrating an elite mansion',
+  'Aladdin': 'Charming street thief aided by a magical wish-granting Genie',
+  'Tenet': 'Secret agents manipulating the flow of time and entropy',
+  'Interstellar': 'Astronauts venturing through a wormhole to save humanity',
+  'Matrix': 'Simulated reality where chosen one takes the red pill',
+  'Ghostbusters': 'Quirky scientists capturing paranormal spirits in NYC',
+  'Jumanji': 'Supernatural board game that brings jungle hazards to life',
+  'Deadpool': 'Sarcastic masked mercenary with rapid healing powers',
+  'Bambi': 'Young deer discovering life and loss in the deep forest',
+  'Mulan': 'Brave young woman disguising herself as a warrior',
+  'Braveheart': 'Scottish rebel warrior fighting for freedom against tyranny',
+  'Grease': '1950s musical romance featuring leather jackets and cars',
+  'Scarface': 'Ruthless immigrant rising to become a powerful drug kingpin',
+  'Coco': 'Young musician venturing into the colorful Land of the Dead',
+  'Moana': 'Courageous islander sailing across the ocean to restore nature',
+  'Ratatouille': 'Talented rat secretly running a high-end French kitchen',
+  'Twilight': 'Moody vampire romance set in a foggy Pacific Northwest town',
+  'Barbie': 'Fabulous doll venturing into the real world from dreamland',
+  'Oppenheimer': 'Theoretical physicist leading the project to build atomic bomb',
+
+  // Places
+  'Beach': 'Coastal shore with soft sand and rolling ocean waves',
+  'Airport': 'Transit hub with check-in gates, runways and jet airliners',
+  'Hospital': 'Medical facility with emergency rooms, doctors and patient beds',
+  'Library': 'Quiet sanctuary lined with towering shelves of books',
+  'Casino': 'Lively gaming hall with roulette tables and slot machines',
+  'Stadium': 'Colossal sports arena filled with roaring spectator crowds',
+  'Mall': 'Multi-level indoor complex packed with retail stores',
+  'Gym': 'Fitness facility with free weights, benches and cardio machines',
+  'Church': 'Historic place of worship with altar, stained glass and pews',
+  'Zoo': 'Enclosed biological park showcasing exotic wildlife from around the world',
+  'Museum': 'Cultural institution exhibiting ancient artifacts and fine art',
+  'Restaurant': 'Dining establishment where chefs prepare and serve meals',
+  'Park': 'Public green landscape with pathways, benches and trees',
+  'School': 'Educational building filled with classrooms, desks and teachers',
+  'Prison': 'High-security correctional facility with locked cells',
+  'Hotel': 'Hospitality building providing temporary suites and concierge service',
+  'Farm': 'Agricultural estate with crops, red barns and farm animals',
+  'Submarine': 'Naval warship engineered to operate deep beneath ocean surface',
+  'Spaceship': 'High-tech spacecraft traveling outside Earth atmosphere',
+  'Nightclub': 'Evening venue with bass-heavy DJ beats and dance floors',
+  'Cemetery': 'Quiet burial ground marked with carved headstones',
+  'Circus': 'Traveling tent show with trapeze artists, clowns and acrobats',
+  'Bakery': 'Artisan shop with warm ovens baking fresh loaves and pastries',
+  'Volcano': 'Geological mountain capable of venting molten lava and ash',
+  'Jungle': 'Dense tropical rainforest teeming with lush canopy vegetation',
+  'Aquarium': 'Aquatic center with giant glass tanks housing marine species',
+  'Theater': 'Performing arts auditorium with velvet stage curtains and rows of seats',
+  'Lighthouse': 'Tall seaside tower projecting a beam of light to guide sailors',
+  'Treehouse': 'Elevated wooden cabin built within sturdy branches',
+  'Rooftop': 'Elevated open-air terrace with panoramic city views',
+
+  // Video Games
+  'Minecraft': 'Voxel sandbox where players mine blocks and build anything',
+  'Fortnite': 'Cartoonish battle royale famous for building and storm circles',
+  'GTA': 'Open-world crime simulator with stolen cars, heists and police chases',
+  'Mario': 'Mustachioed plumber jumping on turtles to rescue the princess',
+  'Zelda': 'Legendary fantasy adventure featuring Link and the Triforce',
+  'Pokemon': 'Catching, training and battling pocket monsters in gyms',
+  'Tetris': 'Timeless puzzle game of rotating falling geometric shapes',
+  'Roblox': 'Online sandbox platform hosting millions of player-made minigames',
+  'Valorant': 'Competitive 5v5 tactical shooter with character powers',
+  'Overwatch': 'Team-based hero shooter with payload escorts and ultimates',
+  'Halo': 'Sci-fi shooter starring Master Chief combating alien forces',
+  'Doom': 'Fast and brutal demon-slaying shooter set in the depths of Hell',
+  'Skyrim': 'Open-world fantasy epic where you shout like a Dragonborn',
+  'Elden Ring': 'Challenging dark fantasy action RPG across the Lands Between',
+  'Apex': 'Squad-based battle royale featuring diverse sci-fi legends',
+  'FIFA': 'Premier soccer video game simulation with world cup teams',
+  'Call of Duty': 'High-adrenaline military first-person combat franchise',
+  'Sims': 'Life management simulation controlling virtual human daily routines',
+  'Fallout': 'Nuclear wasteland RPG exploring vaults and mutant ruins',
+  'Portal': 'Mind-bending puzzle game testing momentum with a portal device',
+  'Undertale': 'Indie RPG where you can befriend every enemy instead of fighting',
+  'Cuphead': 'Vintage 1930s hand-drawn animation boss battle challenge',
+  'Sonic': 'Blue hedgehog blazing through loop-de-loops at sonic speed',
+  'Pac-Man': 'Arcade classic navigating a maze munching dots and running from ghosts',
+  'Kirby': 'Cute pink hero who inhales adversaries to copy their skills',
+  'Destiny': 'Sci-fi online looter-shooter guarding the Last City on Earth',
+  'Cyberpunk': 'Neon-soaked futuristic RPG exploring Night City with bionics',
+  'Among Us': 'Social deception game finding who is sabotaging the spaceship',
+  'Fall Guys': 'Wacky obstacle course royale with stumbling jellybean runners',
+  'Rocket League': 'Fast-paced arena game playing soccer with rocket-boosted cars',
+
+  // Animals
+  'Lion': 'The majestic King of Beasts with a regal mane and loud roar',
+  'Penguin': 'Flightless tuxedo-colored bird sliding on polar glaciers',
+  'Dolphin': 'Playful aquatic mammal renowned for high intelligence and clicks',
+  'Eagle': 'Magnificent bird of prey with razor-sharp talons and vision',
+  'Snake': 'Flexible limbless reptile that glides and sheds its scaly skin',
+  'Elephant': 'Gentle giant of the savannah equipped with long trunk and tusks',
+  'Panda': 'Charming black-and-white bear that feeds almost solely on bamboo',
+  'Shark': 'Formidable ocean hunter with triangular dorsal fin and sharp teeth',
+  'Octopus': 'Clever eight-tentacled sea creature that squirts defensive ink',
+  'Giraffe': 'Graceful herbivore with an exceptionally tall spotted neck',
+  'Koala': 'Fuzzy Australian tree-climber that munches on eucalyptus leaves',
+  'Wolf': 'Canine pack predator communicating with mournful nighttime howls',
+  'Tiger': 'Powerful striped apex predator lurking silently in Asian forests',
+  'Owl': 'Wise nocturnal hunter capable of rotating its head nearly all the way',
+  'Flamingo': 'Vibrant pink wading bird known for balancing on a single slender leg',
+  'Chameleon': 'Camouflaging reptile with independent eyes and a sticky tongue',
+  'Gorilla': 'Massive and peaceful primate roaming dense mountain slopes',
+  'Jellyfish': 'Umbrella-shaped gelatinous sea drifter with trailing stinging tentacles',
+  'Peacock': 'Showy male bird displaying an iridescent fan of eye-pattern feathers',
+  'Hedgehog': 'Small spiny mammal that curls into a protective prickly ball',
+  'Kangaroo': 'Powerful hopping marsupial carrying joeys in its belly pouch',
+  'Crocodile': 'Prehistoric armored river predator with immense biting strength',
+  'Parrot': 'Brightly plumaged tropical bird capable of mimicking speech',
+  'Sloth': 'Tree-dwelling mammal famous for its exceptionally relaxed pace',
+  'Cheetah': 'Slender feline built for astonishing short bursts of ground speed',
+  'Bat': 'Winged nocturnal mammal navigating the dark using sonic echoes',
+  'Seahorse': 'Delicate marine creature with a prehensile tail where males give birth',
+  'Raccoon': 'Clever nocturnal mammal sporting a dark bandit face mask',
+  'Mantis': 'Camouflaged insect holding front legs in a praying stance',
+  'Axolotl': 'Perpetually smiling aquatic salamander with frilly exterior gills',
+
+  // Occupations
+  'Doctor': 'Medical practitioner diagnosing illnesses and prescribing remedies',
+  'Astronaut': 'Trained space traveler venturing into zero gravity',
+  'Detective': 'Investigator analyzing crime scenes to uncover the truth',
+  'Chef': 'Master of culinary arts directing a professional restaurant kitchen',
+  'Firefighter': 'Emergency responder battling fires and rescuing civilians',
+  'Pilot': 'Aviation professional commanding commercial aircraft in flight',
+  'Surgeon': 'Specialist doctor performing precision operations inside the body',
+  'Plumber': 'Trade expert maintaining water pipes, fixtures and drainage lines',
+  'Spy': 'Covert intelligence operative working under alias behind enemy lines',
+  'Pirate': 'Outlaw seafarer raiding merchant vessels under the skull flag',
+  'Ninja': 'Legendary master of espionage, martial arts and silent stealth',
+  'Lifeguard': 'Trained rescue swimmer guarding pool and ocean visitors',
+  'Mechanic': 'Technical expert servicing vehicle engines and mechanical systems',
+  'DJ': 'Audio artist blending electronic tracks and setting party energy',
+  'Barista': 'Espresso artisan crafting specialty coffee drinks with foam art',
+  'Dentist': 'Oral health specialist caring for teeth, gums and smiles',
+  'Lawyer': 'Legal counselor advocating for clients before the court and jury',
+  'Soldier': 'Enlisted service member protecting the nation in tactical operations',
+  'Clown': 'Circus entertainer with painted face, oversized outfit and tricks',
+  'Magician': 'Illusionist amazing spectators with sleight-of-hand feats',
+  'Butcher': 'Artisan processor of fresh cuts of meats for culinary use',
+  'Electrician': 'Skilled tradesperson installing electrical power grids and outlets',
+  'Farmer': 'Agricultural producer managing farmland, livestock and seasonal harvests',
+  'Boxer': 'Combat athlete exchanging jabs and hooks inside the boxing ring',
+  'Dancer': 'Movement artist performing expressive choreography to music',
+  'Scientist': 'Researcher formulating hypotheses and conducting lab experiments',
+  'Architect': 'Creative planner drafting structural blueprints for iconic buildings',
+  'Singer': 'Musical performer conveying emotion through melody and vocal range',
+  'Referee': 'Neutral official enforcing rules on the sports field with a whistle',
+  'Cowboy': 'Horseback cattle herder of the rugged American frontier',
+
+  // 18+ Spicy
+  'Sneaky Link': 'A clandestine late-night meetup kept strictly confidential',
+  'OnlyFans': 'Subscription service known for exclusive adult creator content',
+  'Morning After Pill': 'Emergency contraceptive purchased the morning following passion',
+  'Walk of Shame': 'Daylight commute home wearing last night party attire',
+  'Threesome': 'Intimate bedroom encounter involving three consenting people',
+  'Body Count': 'Provocative party question discussing total number of past partners',
+  'Netflix and Chill': 'Seemingly innocent streaming invite with alternative motives',
+  'Sugar Mommy': 'Financially generous mature woman pampering her companion',
+  'Freaky Friday': 'Uninhibited night of exploring wild desires and kinks',
+  'Sexting': 'Exchanging explicit messages and photos over smartphone',
+  'Drunk Texting': 'Unfiltered late-night message sent with liquid courage',
+  'Side Piece': 'Secret romantic companion kept on the side of a main relationship',
+  'Lap Dance': 'Sensual personalized dance performed seated up close in a club',
+  'Mile High Club': 'Legendary status achieved by being intimate in airplane lavatory',
+  'Fake Moaning': 'Vocal exaggeration to boost a partner confidence in bed',
+  'Friendzone': 'Unfortunate realm where romantic feelings are met with just friendship',
+  'Caught in 4K': 'Getting caught red-handed with crystal-clear indisputable proof',
+  'Stripper Pole': 'Vertical stainless steel apparatus used for exotic club acrobatics',
+  'Late Night Uber': 'Rideshare home at 3:30 AM after making questionable party choices',
+  'Skinny Dipping': 'Swimming in natural waters completely free of swimwear',
+  'Body Shots': 'Consuming alcohol directly off someone bare skin',
+  'Tinder Hookup': 'Casual date resulting from an enthusiastic swipe to the right',
+  'Glory Hole': 'Secret cutout in a partition designed for anonymous encounters',
+  'Spanking': 'Playful physical discipline applied across the backside',
+  'Sugar Daddy': 'Wealthy benefactor providing luxury support in exchange for company',
+  'Handcuffs': 'Locking wrist restraints repurposed for bedroom thrill-seeking',
+  'Horny Jail': 'Metaphorical lockup for individuals being excessively flirtatious',
+  'Edibles': 'THC-infused treats that hit with a powerful delayed sensation',
+  'Blindfold': 'Sensory deprivation mask that sharpens touch and anticipation',
+  'Hickey': 'Passionate suction bruise left on the neck after make-out session',
+  'Dirty Talk': 'Whispering seductive, unfiltered phrases in the heat of passion',
+  'Roleplay': 'Adopting fantasy personas and costumes to spice up intimacy',
+  'One Night Stand': 'Passionate single-night encounter with no expectations of tomorrow',
+  'Shower Sex': 'Slippery and surprisingly uncoordinated attempt at aquatic romance',
+  'Friends with Benefits': 'Platonic friendship with casual physical privileges included',
+  'Gold Digger': 'Person whose romantic interest is driven solely by financial wealth',
+  'Strip Poker': 'Card game where bad hands result in removing pieces of clothing',
+  'French Kiss': 'Deep romantic kiss involving enthusiastic contact with tongues',
+  'Down Bad': 'Suffering from extreme desperation for romantic attention',
+  'Red Flag': 'Glaring personality warning sign that demands immediate caution',
+  'Love Bite': 'Teeth mark left in moments of intense intimacy',
+  'Naughty Maid': 'Popular fantasy costume complete with apron and feather duster',
+  'Spin the Bottle': 'Teen party circle game where bottle point dictates who you kiss',
+  'Stalker Ex': 'Former flame who secretly checks every story and post you make',
+  'Late Night Facetime': 'Midnight video call under dim lighting with hushed voices',
+  'Ghosting': 'Abruptly cutting off all communication and disappearing forever',
+  'Cuddle Buddy': 'Partner kept strictly for warmth, snuggling and company',
+  'Whipped Cream': 'Sweet dessert foam used creatively across human skin',
+  'Hot Tub Party': 'Steamy outdoor jacuzzi gathering where clothing is optional',
+  'Booty Call': 'Direct midnight message requesting an immediate romantic rendezvous',
+  'Truth or Dare': 'Classic party game that unearths dirty confessions and dares',
+  'Twerking': 'Energetic dance movement centering on rhythmic hip and glute motion'
+};
+
+// ==========================================
 // CATEGORIES CONFIG
 // ==========================================
 const CATEGORIES = [
@@ -369,6 +620,13 @@ function getWordCategoryInfo(word) {
     }
   }
   return { key: 'custom', name: 'Custom Words', emoji: '✏️' };
+}
+
+function getWordClue(word) {
+  if (WORD_HINTS[word]) {
+    return WORD_HINTS[word];
+  }
+  return `A mystery word with ${word.length} letters`;
 }
 
 // ==========================================
@@ -676,15 +934,28 @@ function updateGameScreen() {
   if (isImposter) {
     cardBack.className = 'card-back is-imposter';
     const catInfo = game.currentCategoryInfo || { name: 'Secret Category', emoji: '🔍' };
+    const clue = getWordClue(game.currentWord);
+    const wordLen = game.currentWord.length;
+    const firstLetter = game.currentWord[0].toUpperCase();
+
     cardBack.innerHTML = `
       <span class="card-role-emoji">🕵️</span>
       <span class="card-role-label">You are the</span>
       <span class="card-role-word">IMPOSTER</span>
-      <div class="imposter-hint-pill">
-        <span class="hint-icon">💡 Hint:</span>
-        <span class="hint-text">${catInfo.emoji} ${catInfo.name}</span>
+      
+      <div class="imposter-clue-card">
+        <div class="imposter-clue-header">
+          <span class="clue-badge">💡 Secret Intel</span>
+          <span class="clue-category">${catInfo.emoji} ${catInfo.name}</span>
+        </div>
+        <p class="imposter-clue-text">"${clue}"</p>
+        <div class="imposter-clue-meta">
+          <span class="clue-tag">📏 ${wordLen} letters</span>
+          <span class="clue-tag">🔤 Starts with "${firstLetter}"</span>
+        </div>
       </div>
-      <span class="card-role-hint">Blend in & figure out the word!</span>
+
+      <span class="card-role-hint">Blend in & deduce the secret word!</span>
     `;
   } else {
     cardBack.className = 'card-back';

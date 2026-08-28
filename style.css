@@ -1126,33 +1126,72 @@ h1, h2, h3 {
   font-size: 1.9rem;
 }
 
-/* Imposter Secret Hint Pill */
-.imposter-hint-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 18px;
-  border-radius: var(--radius-full);
-  background: var(--danger-bg);
-  border: 1.5px solid rgba(255, 69, 58, 0.45);
-  box-shadow: var(--glass-specular-top), 0 0 20px rgba(255, 69, 58, 0.25);
+/* Imposter Secret Intel / Hint Card */
+.imposter-clue-card {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 69, 58, 0.08);
+  border: 1px solid rgba(255, 69, 58, 0.35);
+  box-shadow: var(--glass-specular-top), 0 0 20px rgba(255, 69, 58, 0.15);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   margin: 2px 0;
-  animation: fade-in-up 0.4s var(--ease-ios-fluid);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
+  animation: fade-in-up 0.45s var(--ease-ios-fluid);
 }
 
-.hint-icon {
-  font-size: 0.86rem;
-  font-weight: 700;
+.imposter-clue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.clue-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   color: #ff9f0a;
+  text-transform: uppercase;
 }
 
-.hint-text {
-  font-size: 0.92rem;
+.clue-category {
+  font-size: 0.78rem;
   font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--glass-bg);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--glass-border);
+}
+
+.imposter-clue-text {
+  font-size: 0.88rem;
+  font-weight: 600;
   color: var(--text-primary);
-  letter-spacing: -0.01em;
+  line-height: 1.35;
+  font-style: italic;
+}
+
+.imposter-clue-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.clue-tag {
+  background: var(--glass-bg);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--glass-border);
 }
 
 /* Got It Button */
