@@ -1,6 +1,6 @@
 // ==========================================
 // FIND THE IMPOSTER — Game Logic
-// iOS Liquid Glass Edition
+// Apple iOS Liquid Glass Edition
 // ==========================================
 
 // ==========================================
@@ -101,8 +101,105 @@ const game = {
   timerInterval: null,
   timerRunning: false,
   cardRevealed: false,
-  cardConfirmed: false, // New: tracks if player hit "Got it"
 };
+
+// ==========================================
+// APPLE HAPTICS & SOUND SYSTEM (Web Audio API)
+// ==========================================
+let audioCtx = null;
+
+function playHaptic(type = 'click') {
+  // Mobile vibration
+  if (navigator.vibrate) {
+    if (type === 'heavy') navigator.vibrate([15, 30, 15]);
+    else if (type === 'reveal') navigator.vibrate([12, 40, 20]);
+    else if (type === 'flip') navigator.vibrate(12);
+    else navigator.vibrate(8);
+  }
+
+  // Synthesized Apple Taptic Audio
+  try {
+    if (!audioCtx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) audioCtx = new AudioContext();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    if (audioCtx) {
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'reveal') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(740, now + 0.12);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+        osc.start(now);
+        osc.stop(now + 0.15);
+      } else if (type === 'flip') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.08);
+        gain.gain.setValueAtTime(0.10, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        osc.start(now);
+        osc.stop(now + 0.09);
+      } else {
+        // Crisp pop/click
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(900, now);
+        osc.frequency.exponentialRampToValueAtTime(450, now + 0.035);
+        gain.gain.setValueAtTime(0.07, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+        osc.start(now);
+        osc.stop(now + 0.04);
+      }
+    }
+  } catch (e) { /* ignore audio failure */ }
+}
+
+// ==========================================
+// 3D LIQUID GLASS CARD TILT INTERACTION
+// ==========================================
+function initCardTilt() {
+  const container = document.querySelector('.card-container');
+  const card = document.getElementById('game-card');
+  if (!container || !card) return;
+
+  function handleMove(clientX, clientY) {
+    const rect = container.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    
+    if (x < 0 || x > rect.width || y < 0 || y > rect.height) return;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const rotateX = ((y - centerY) / centerY) * -10;
+    const rotateY = ((x - centerX) / centerX) * 10;
+
+    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  }
+
+  function handleReset() {
+    card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+  }
+
+  container.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+  container.addEventListener('mouseleave', handleReset);
+  container.addEventListener('touchmove', (e) => {
+    if (e.touches && e.touches[0]) {
+      handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, { passive: true });
+  container.addEventListener('touchend', handleReset);
+}
 
 // ==========================================
 // UTILITIES
@@ -135,13 +232,12 @@ function getPlayerName(index) {
 // THEME MANAGEMENT
 // ==========================================
 function initTheme() {
-  // Load saved theme
   const savedTheme = localStorage.getItem('imposter_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
   updateThemeColor(savedTheme);
 
-  // Theme toggle handler
   document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+    playHaptic('click');
     const current = document.documentElement.getAttribute('data-theme');
     const next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
@@ -153,7 +249,7 @@ function initTheme() {
 function updateThemeColor(theme) {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
-    meta.content = theme === 'dark' ? '#000000' : '#f2f2f7';
+    meta.content = theme === 'dark' ? '#050508' : '#eef1f6';
   }
 }
 
@@ -233,11 +329,13 @@ function loadSettings() {
 // ==========================================
 function initHome() {
   document.getElementById('btn-start-game').addEventListener('click', () => {
+    playHaptic('click');
     initSetup();
     showScreen('screen-setup');
   });
 
   document.getElementById('btn-how-to-play').addEventListener('click', () => {
+    playHaptic('click');
     showScreen('screen-howto');
   });
 }
@@ -247,10 +345,12 @@ function initHome() {
 // ==========================================
 function initHowToPlay() {
   document.getElementById('btn-back-howto').addEventListener('click', () => {
+    playHaptic('click');
     showScreen('screen-home');
   });
 
   document.getElementById('btn-got-it').addEventListener('click', () => {
+    playHaptic('click');
     showScreen('screen-home');
   });
 }
@@ -275,6 +375,7 @@ function renderTimerPicker() {
     btn.className = 'timer-option' + (game.timerDuration === preset.value ? ' selected' : '');
     btn.textContent = preset.label;
     btn.addEventListener('click', () => {
+      playHaptic('click');
       game.timerDuration = preset.value;
       game.timerRemaining = preset.value;
       renderTimerPicker();
@@ -296,6 +397,7 @@ function renderCategories() {
       ${cat.key !== 'custom' ? `<span class="word-count-badge">${WORD_BANK[cat.key]?.length || 0} words</span>` : `<span class="word-count-badge">${game.customWords.length} words</span>`}
     `;
     card.addEventListener('click', () => {
+      playHaptic('click');
       game.selectedCategory = cat.key;
       renderCategories();
       updateCustomWordsSection();
@@ -340,7 +442,6 @@ function renderPlayerNames() {
 
   section.appendChild(grid);
 
-  // Bind input events
   grid.querySelectorAll('.name-input').forEach(input => {
     input.addEventListener('input', (e) => {
       const idx = parseInt(e.target.dataset.index);
@@ -350,14 +451,14 @@ function renderPlayerNames() {
 }
 
 function setupScreenHandlers() {
-  // Back button
   document.getElementById('btn-back-setup').addEventListener('click', () => {
+    playHaptic('click');
     showScreen('screen-home');
   });
 
-  // Player count
   document.getElementById('btn-players-minus').addEventListener('click', () => {
     if (game.playerCount > 3) {
+      playHaptic('click');
       game.playerCount--;
       if (game.imposterCount >= game.playerCount - 1) {
         game.imposterCount = Math.max(1, game.playerCount - 2);
@@ -369,15 +470,16 @@ function setupScreenHandlers() {
 
   document.getElementById('btn-players-plus').addEventListener('click', () => {
     if (game.playerCount < 15) {
+      playHaptic('click');
       game.playerCount++;
       updateCounterDisplays();
       renderPlayerNames();
     }
   });
 
-  // Imposter count
   document.getElementById('btn-imposters-minus').addEventListener('click', () => {
     if (game.imposterCount > 1) {
+      playHaptic('click');
       game.imposterCount--;
       updateCounterDisplays();
     }
@@ -385,13 +487,14 @@ function setupScreenHandlers() {
 
   document.getElementById('btn-imposters-plus').addEventListener('click', () => {
     if (game.imposterCount < game.playerCount - 2) {
+      playHaptic('click');
       game.imposterCount++;
       updateCounterDisplays();
     }
   });
 
-  // Toggle player names
   document.getElementById('btn-toggle-names').addEventListener('click', () => {
+    playHaptic('click');
     const section = document.getElementById('player-names-section');
     game.useCustomNames = section.classList.contains('hidden');
     section.classList.toggle('hidden');
@@ -399,8 +502,8 @@ function setupScreenHandlers() {
       game.useCustomNames ? 'Hide Player Names' : 'Add Player Names (Optional)';
   });
 
-  // Save custom words
   document.getElementById('btn-save-custom').addEventListener('click', () => {
+    playHaptic('click');
     const textarea = document.getElementById('custom-words-input');
     game.customWords = textarea.value
       .split('\n')
@@ -411,8 +514,8 @@ function setupScreenHandlers() {
     showToast(`✅ Saved ${game.customWords.length} custom words`);
   });
 
-  // Start round
   document.getElementById('btn-start-round').addEventListener('click', () => {
+    playHaptic('heavy');
     if (!game.selectedCategory) {
       showToast('⚠️ Pick a word category first!');
       return;
@@ -439,20 +542,15 @@ function setupScreenHandlers() {
 // GAME LOGIC
 // ==========================================
 function startRound(wordList) {
-  // Pick a random word
   game.currentWord = pickRandom(wordList);
 
-  // Pick random imposter indices
   const indices = Array.from({ length: game.playerCount }, (_, i) => i);
   const shuffled = shuffle(indices);
   game.imposterIndices = shuffled.slice(0, game.imposterCount);
 
-  // Reset state
   game.currentPlayerIndex = 0;
   game.cardRevealed = false;
-  game.cardConfirmed = false;
 
-  // Setup game screen
   updateGameScreen();
   showScreen('screen-game');
 }
@@ -461,13 +559,9 @@ function updateGameScreen() {
   const idx = game.currentPlayerIndex;
   const name = getPlayerName(idx);
 
-  // Player name
   document.getElementById('current-player-name').textContent = `${name}'s Turn`;
-
-  // Instruction
   document.getElementById('game-instruction').textContent = 'Tap the card to reveal your role';
 
-  // Progress dots
   const progress = document.getElementById('player-progress');
   progress.innerHTML = '';
   for (let i = 0; i < game.playerCount; i++) {
@@ -478,13 +572,11 @@ function updateGameScreen() {
     progress.appendChild(dot);
   }
 
-  // Reset card
   const card = document.getElementById('game-card');
   card.classList.remove('flipped');
+  card.style.transform = 'rotateX(0deg) rotateY(0deg)';
   game.cardRevealed = false;
-  game.cardConfirmed = false;
 
-  // Prepare card back content
   const isImposter = game.imposterIndices.includes(idx);
   const cardBack = document.getElementById('card-back-content');
 
@@ -506,7 +598,6 @@ function updateGameScreen() {
     `;
   }
 
-  // Hide Got It button and set appropriate text
   const gotItBtn = document.getElementById('btn-got-it-card');
   gotItBtn.classList.add('hidden');
   gotItBtn.textContent = (idx >= game.playerCount - 1) ? '✓ Got it (Start Discussion)' : '✓ Got it (Next Player)';
@@ -515,14 +606,11 @@ function updateGameScreen() {
 function handleCardTap() {
   const card = document.getElementById('game-card');
 
-  // Only allow reveal if card hasn't been revealed yet
   if (!game.cardRevealed) {
-    // Reveal the card — it STAYS revealed
+    playHaptic('reveal');
     card.classList.add('flipped');
     game.cardRevealed = true;
     document.getElementById('game-instruction').textContent = 'Memorize your role, then tap below';
-
-    // Show the "Got it" button
     document.getElementById('btn-got-it-card').classList.remove('hidden');
   }
 }
@@ -530,10 +618,10 @@ function handleCardTap() {
 function handleGotIt() {
   if (!game.cardRevealed) return;
 
+  playHaptic('flip');
   game.currentPlayerIndex++;
 
   if (game.currentPlayerIndex >= game.playerCount) {
-    // All players have seen their cards
     initDiscussion();
     showScreen('screen-discuss');
   } else {
@@ -544,6 +632,7 @@ function handleGotIt() {
 function gameScreenHandlers() {
   document.getElementById('game-card').addEventListener('click', handleCardTap);
   document.getElementById('btn-got-it-card').addEventListener('click', handleGotIt);
+  initCardTilt();
 }
 
 // ==========================================
@@ -580,13 +669,12 @@ function updateTimerDisplay() {
 }
 
 function toggleTimer() {
+  playHaptic('click');
   if (game.timerRunning) {
-    // Pause
     clearInterval(game.timerInterval);
     game.timerRunning = false;
     document.getElementById('btn-timer-toggle').textContent = 'Resume';
   } else {
-    // Start/Resume
     game.timerRunning = true;
     document.getElementById('btn-timer-toggle').textContent = 'Pause';
 
@@ -598,12 +686,12 @@ function toggleTimer() {
         clearInterval(game.timerInterval);
         game.timerRunning = false;
         document.getElementById('btn-timer-toggle').textContent = 'Start Timer';
+        playHaptic('heavy');
         showToast('⏰ Time\'s up!');
       }
 
       updateTimerDisplay();
 
-      // Update timer circle color
       const timerCircle = document.querySelector('.timer-circle');
       const pct = game.timerRemaining / game.timerDuration;
       timerCircle.classList.remove('warning', 'danger');
@@ -614,6 +702,7 @@ function toggleTimer() {
 }
 
 function resetTimer() {
+  playHaptic('click');
   clearInterval(game.timerInterval);
   game.timerRunning = false;
   game.timerRemaining = game.timerDuration;
@@ -627,6 +716,7 @@ function discussionHandlers() {
   document.getElementById('btn-timer-toggle').addEventListener('click', toggleTimer);
   document.getElementById('btn-timer-reset').addEventListener('click', resetTimer);
   document.getElementById('btn-reveal-imposter').addEventListener('click', () => {
+    playHaptic('heavy');
     clearInterval(game.timerInterval);
     showResults();
     showScreen('screen-results');
@@ -637,7 +727,6 @@ function discussionHandlers() {
 // RESULTS SCREEN
 // ==========================================
 function showResults() {
-  // Imposter names
   const revealEl = document.getElementById('imposter-reveal');
   const imposterNames = game.imposterIndices.map(i => getPlayerName(i));
 
@@ -648,10 +737,7 @@ function showResults() {
     </div>
   `;
 
-  // Word
   document.getElementById('word-reveal').textContent = game.currentWord;
-
-  // Confetti!
   setTimeout(createConfetti, 300);
 }
 
@@ -659,7 +745,7 @@ function createConfetti() {
   const container = document.getElementById('confetti-container');
   container.innerHTML = '';
 
-  const colors = ['#a855f7', '#ec4899', '#06b6d4', '#22c55e', '#eab308', '#ef4444', '#f97316'];
+  const colors = ['#bf5af2', '#ff375f', '#64d2ff', '#30d158', '#ffd60a', '#ff453a'];
 
   for (let i = 0; i < 60; i++) {
     const piece = document.createElement('div');
@@ -679,12 +765,13 @@ function createConfetti() {
 
 function resultsHandlers() {
   document.getElementById('btn-play-again').addEventListener('click', () => {
-    // Same settings, new round
+    playHaptic('heavy');
     const wordList = game.selectedCategory === 'custom' ? game.customWords : WORD_BANK[game.selectedCategory];
     startRound(wordList);
   });
 
   document.getElementById('btn-new-game').addEventListener('click', () => {
+    playHaptic('click');
     initSetup();
     showScreen('screen-setup');
   });
