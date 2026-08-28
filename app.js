@@ -95,7 +95,7 @@ const TIMER_PRESETS = [
 const game = {
   playerCount: 4,
   imposterCount: 1,
-  selectedCategory: null,
+  selectedCategories: ['food'],
   currentWord: null,
   imposterIndices: [],
   currentPlayerIndex: 0,
@@ -311,7 +311,7 @@ function saveSettings() {
     localStorage.setItem('imposter_settings', JSON.stringify({
       playerCount: game.playerCount,
       imposterCount: game.imposterCount,
-      selectedCategory: game.selectedCategory,
+      selectedCategories: game.selectedCategories,
       timerDuration: game.timerDuration,
     }));
   } catch (e) { /* ignore */ }
@@ -324,10 +324,26 @@ function loadSettings() {
       const s = JSON.parse(saved);
       game.playerCount = s.playerCount || 4;
       game.imposterCount = s.imposterCount || 1;
-      game.selectedCategory = s.selectedCategory || null;
+      if (Array.isArray(s.selectedCategories) && s.selectedCategories.length > 0) {
+        game.selectedCategories = s.selectedCategories;
+      } else if (s.selectedCategory) {
+        game.selectedCategories = [s.selectedCategory];
+      }
       game.timerDuration = s.timerDuration || 120;
     }
   } catch (e) { /* ignore */ }
+}
+
+function getCombinedWordPool() {
+  let words = [];
+  game.selectedCategories.forEach(cat => {
+    if (cat === 'custom') {
+      words.push(...game.customWords);
+    } else if (WORD_BANK[cat]) {
+      words.push(...WORD_BANK[cat]);
+    }
+  });
+  return [...new Set(words)];
 }
 
 // ==========================================
@@ -394,9 +410,17 @@ function renderCategories() {
   const grid = document.getElementById('category-grid');
   grid.innerHTML = '';
 
+  const standardCats = CATEGORIES.filter(c => c.key !== 'custom').map(c => c.key);
+  const allStandardSelected = standardCats.every(k => game.selectedCategories.includes(k));
+  const selectAllBtn = document.getElementById('btn-select-all-cats');
+  if (selectAllBtn) {
+    selectAllBtn.textContent = allStandardSelected ? 'Deselect All' : 'Select All';
+  }
+
   CATEGORIES.forEach(cat => {
+    const isSelected = game.selectedCategories.includes(cat.key);
     const card = document.createElement('div');
-    card.className = 'category-card' + (game.selectedCategory === cat.key ? ' selected' : '');
+    card.className = 'category-card' + (isSelected ? ' selected' : '');
     card.innerHTML = `
       <span class="category-emoji">${cat.emoji}</span>
       <span class="category-name">${cat.name}</span>
@@ -404,7 +428,15 @@ function renderCategories() {
     `;
     card.addEventListener('click', () => {
       playHaptic('click');
-      game.selectedCategory = cat.key;
+      if (isSelected) {
+        if (game.selectedCategories.length === 1) {
+          showToast('⚠️ Keep at least 1 category selected!');
+          return;
+        }
+        game.selectedCategories = game.selectedCategories.filter(k => k !== cat.key);
+      } else {
+        game.selectedCategories.push(cat.key);
+      }
       renderCategories();
       updateCustomWordsSection();
     });
@@ -414,7 +446,7 @@ function renderCategories() {
 
 function updateCustomWordsSection() {
   const section = document.getElementById('custom-words-section');
-  if (game.selectedCategory === 'custom') {
+  if (game.selectedCategories.includes('custom')) {
     section.classList.remove('hidden');
     const textarea = document.getElementById('custom-words-input');
     textarea.value = game.customWords.join('\n');
@@ -508,6 +540,22 @@ function setupScreenHandlers() {
       game.useCustomNames ? 'Hide Player Names' : 'Add Player Names (Optional)';
   });
 
+  document.getElementById('btn-select-all-cats').addEventListener('click', () => {
+    playHaptic('click');
+    const standardCats = CATEGORIES.filter(c => c.key !== 'custom').map(c => c.key);
+    const allStandardSelected = standardCats.every(k => game.selectedCategories.includes(k));
+
+    if (allStandardSelected) {
+      // Reset to first category only
+      game.selectedCategories = ['food'];
+    } else {
+      // Select all standard categories
+      game.selectedCategories = [...standardCats];
+    }
+    renderCategories();
+    updateCustomWordsSection();
+  });
+
   document.getElementById('btn-save-custom').addEventListener('click', () => {
     playHaptic('click');
     const textarea = document.getElementById('custom-words-input');
@@ -522,12 +570,12 @@ function setupScreenHandlers() {
 
   document.getElementById('btn-start-round').addEventListener('click', () => {
     playHaptic('heavy');
-    if (!game.selectedCategory) {
-      showToast('⚠️ Pick a word category first!');
+    if (!game.selectedCategories || game.selectedCategories.length === 0) {
+      showToast('⚠️ Pick at least 1 category!');
       return;
     }
 
-    const wordList = game.selectedCategory === 'custom' ? game.customWords : WORD_BANK[game.selectedCategory];
+    const wordList = getCombinedWordPool();
 
     if (!wordList || wordList.length < 1) {
       showToast('⚠️ Not enough words! Add at least 1 word.');
@@ -772,7 +820,7 @@ function createConfetti() {
 function resultsHandlers() {
   document.getElementById('btn-play-again').addEventListener('click', () => {
     playHaptic('heavy');
-    const wordList = game.selectedCategory === 'custom' ? game.customWords : WORD_BANK[game.selectedCategory];
+    const wordList = getCombinedWordPool();
     startRound(wordList);
   });
 
