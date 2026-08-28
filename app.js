@@ -97,6 +97,7 @@ const game = {
   imposterCount: 1,
   selectedCategories: ['food'],
   currentWord: null,
+  usedWords: [],
   imposterIndices: [],
   currentPlayerIndex: 0,
   playerNames: [],
@@ -302,6 +303,21 @@ function loadCustomWords() {
     const saved = localStorage.getItem('imposter_custom_words');
     if (saved) {
       game.customWords = JSON.parse(saved);
+    }
+  } catch (e) { /* ignore */ }
+}
+
+function saveUsedWords() {
+  try {
+    localStorage.setItem('imposter_used_words', JSON.stringify(game.usedWords));
+  } catch (e) { /* ignore */ }
+}
+
+function loadUsedWords() {
+  try {
+    const saved = localStorage.getItem('imposter_used_words');
+    if (saved) {
+      game.usedWords = JSON.parse(saved);
     }
   } catch (e) { /* ignore */ }
 }
@@ -605,7 +621,20 @@ function setupScreenHandlers() {
 // GAME LOGIC
 // ==========================================
 function startRound(wordList) {
-  game.currentWord = pickRandom(wordList);
+  // Filter out previously used words
+  let availableWords = wordList.filter(w => !game.usedWords.includes(w));
+
+  // If all words from current categories have been played, reset and recycle pool
+  if (availableWords.length === 0) {
+    game.usedWords = game.usedWords.filter(w => !wordList.includes(w));
+    availableWords = wordList;
+  }
+
+  // Pick an unplayed word
+  game.currentWord = pickRandom(availableWords);
+  game.usedWords.push(game.currentWord);
+  saveUsedWords();
+
   game.currentCategoryInfo = getWordCategoryInfo(game.currentWord);
 
   const indices = Array.from({ length: game.playerCount }, (_, i) => i);
@@ -858,6 +887,7 @@ function registerSW() {
 document.addEventListener('DOMContentLoaded', () => {
   loadSettings();
   loadCustomWords();
+  loadUsedWords();
   registerSW();
   initTheme();
 
