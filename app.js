@@ -1,5 +1,6 @@
 // ==========================================
 // FIND THE IMPOSTER — Game Logic
+// iOS Liquid Glass Edition
 // ==========================================
 
 // ==========================================
@@ -73,6 +74,15 @@ const CATEGORIES = [
   { key: 'custom',      emoji: '✏️',  name: 'Custom' },
 ];
 
+// Timer presets (seconds)
+const TIMER_PRESETS = [
+  { label: '30s',  value: 30 },
+  { label: '1 min', value: 60 },
+  { label: '2 min', value: 120 },
+  { label: '3 min', value: 180 },
+  { label: '5 min', value: 300 },
+];
+
 // ==========================================
 // GAME STATE
 // ==========================================
@@ -91,6 +101,7 @@ const game = {
   timerInterval: null,
   timerRunning: false,
   cardRevealed: false,
+  cardConfirmed: false, // New: tracks if player hit "Got it"
 };
 
 // ==========================================
@@ -121,6 +132,32 @@ function getPlayerName(index) {
 }
 
 // ==========================================
+// THEME MANAGEMENT
+// ==========================================
+function initTheme() {
+  // Load saved theme
+  const savedTheme = localStorage.getItem('imposter_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeColor(savedTheme);
+
+  // Theme toggle handler
+  document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('imposter_theme', next);
+    updateThemeColor(next);
+  });
+}
+
+function updateThemeColor(theme) {
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) {
+    meta.content = theme === 'dark' ? '#000000' : '#f2f2f7';
+  }
+}
+
+// ==========================================
 // TOAST NOTIFICATIONS
 // ==========================================
 let toastTimeout;
@@ -145,7 +182,6 @@ function showScreen(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(screenId);
   if (target) {
-    // Small delay for transition smoothness
     requestAnimationFrame(() => target.classList.add('active'));
   }
 }
@@ -225,8 +261,26 @@ function initHowToPlay() {
 function initSetup() {
   updateCounterDisplays();
   renderCategories();
+  renderTimerPicker();
   renderPlayerNames();
   updateCustomWordsSection();
+}
+
+function renderTimerPicker() {
+  const container = document.getElementById('timer-picker');
+  container.innerHTML = '';
+
+  TIMER_PRESETS.forEach(preset => {
+    const btn = document.createElement('button');
+    btn.className = 'timer-option' + (game.timerDuration === preset.value ? ' selected' : '');
+    btn.textContent = preset.label;
+    btn.addEventListener('click', () => {
+      game.timerDuration = preset.value;
+      game.timerRemaining = preset.value;
+      renderTimerPicker();
+    });
+    container.appendChild(btn);
+  });
 }
 
 function renderCategories() {
@@ -396,6 +450,7 @@ function startRound(wordList) {
   // Reset state
   game.currentPlayerIndex = 0;
   game.cardRevealed = false;
+  game.cardConfirmed = false;
 
   // Setup game screen
   updateGameScreen();
@@ -427,6 +482,7 @@ function updateGameScreen() {
   const card = document.getElementById('game-card');
   card.classList.remove('flipped');
   game.cardRevealed = false;
+  game.cardConfirmed = false;
 
   // Prepare card back content
   const isImposter = game.imposterIndices.includes(idx);
@@ -450,7 +506,8 @@ function updateGameScreen() {
     `;
   }
 
-  // Hide next button
+  // Hide both buttons
+  document.getElementById('btn-got-it-card').classList.add('hidden');
   const nextBtn = document.getElementById('btn-next-player');
   nextBtn.classList.add('hidden');
   nextBtn.textContent = (idx >= game.playerCount - 1) ? '🗣️ Start Discussion' : '👉 Next Player';
@@ -459,20 +516,36 @@ function updateGameScreen() {
 function handleCardTap() {
   const card = document.getElementById('game-card');
 
+  // Only allow reveal if card hasn't been revealed yet
   if (!game.cardRevealed) {
-    // Reveal
+    // Reveal the card — it STAYS revealed
     card.classList.add('flipped');
     game.cardRevealed = true;
-    document.getElementById('game-instruction').textContent = 'Tap the card to hide it, then pass the phone';
-  } else {
-    // Hide
-    card.classList.remove('flipped');
-    game.cardRevealed = false;
-    document.getElementById('game-instruction').textContent = '';
+    document.getElementById('game-instruction').textContent = 'Memorize your role, then tap "Got it"';
 
-    // Show next button
-    document.getElementById('btn-next-player').classList.remove('hidden');
+    // Show the "Got it" button
+    document.getElementById('btn-got-it-card').classList.remove('hidden');
   }
+  // If already revealed, do nothing — card stays visible
+}
+
+function handleGotIt() {
+  if (!game.cardRevealed || game.cardConfirmed) return;
+
+  game.cardConfirmed = true;
+
+  // Flip card back
+  const card = document.getElementById('game-card');
+  card.classList.remove('flipped');
+
+  // Hide "Got it" button
+  document.getElementById('btn-got-it-card').classList.add('hidden');
+
+  // Update instruction
+  document.getElementById('game-instruction').textContent = 'Pass the phone to the next player';
+
+  // Show "Next Player" button
+  document.getElementById('btn-next-player').classList.remove('hidden');
 }
 
 function handleNextPlayer() {
@@ -489,6 +562,7 @@ function handleNextPlayer() {
 
 function gameScreenHandlers() {
   document.getElementById('game-card').addEventListener('click', handleCardTap);
+  document.getElementById('btn-got-it-card').addEventListener('click', handleGotIt);
   document.getElementById('btn-next-player').addEventListener('click', handleNextPlayer);
 }
 
@@ -505,6 +579,17 @@ function initDiscussion() {
   timerCircle.classList.remove('warning', 'danger');
 
   document.getElementById('btn-timer-toggle').textContent = 'Start Timer';
+
+  // Pick a random non-imposter player to start describing
+  const nonImposters = [];
+  for (let i = 0; i < game.playerCount; i++) {
+    if (!game.imposterIndices.includes(i)) {
+      nonImposters.push(i);
+    }
+  }
+  const starterIndex = pickRandom(nonImposters);
+  const starterName = getPlayerName(starterIndex);
+  document.getElementById('starter-name').textContent = starterName;
 }
 
 function updateTimerDisplay() {
@@ -643,6 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadSettings();
   loadCustomWords();
   registerSW();
+  initTheme();
 
   initHome();
   initHowToPlay();

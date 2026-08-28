@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Imposter">
-  <meta name="theme-color" content="#0a0a0f">
+  <meta name="theme-color" content="#000000">
   <meta name="description" content="Find the Imposter — the ultimate free party game. Pass the phone, flip cards, and figure out who's bluffing!">
 
   <title>Find the Imposter</title>
@@ -29,6 +29,14 @@
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
+  </div>
+
+  <!-- ========== THEME TOGGLE ========== -->
+  <div class="theme-toggle-container">
+    <button class="theme-toggle" id="btn-theme-toggle" aria-label="Toggle dark/light mode">
+      <span class="icon-sun">☀️</span>
+      <span class="icon-moon">🌙</span>
+    </button>
   </div>
 
   <!-- ========== SCREEN: HOME ========== -->
@@ -137,6 +145,16 @@
         </div>
       </div>
 
+      <!-- Timer Duration -->
+      <div class="setup-section">
+        <div class="setup-label">
+          <span>⏱️ Discussion Timer</span>
+        </div>
+        <div class="timer-picker" id="timer-picker">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
       <!-- Category Selection -->
       <div class="setup-section">
         <div class="setup-label">
@@ -210,6 +228,12 @@
         </div>
       </div>
 
+      <!-- Got it button (appears after card reveal, stays card flipped) -->
+      <button class="btn btn-success btn-lg btn-got-it-card hidden" id="btn-got-it-card">
+        ✓ Got it
+      </button>
+
+      <!-- Next Player button (appears after Got It) -->
       <button class="btn btn-primary btn-lg hidden" id="btn-next-player">
         👉 Next Player
       </button>
@@ -225,6 +249,12 @@
         Take turns describing the word.<br>
         The imposter must blend in!
       </p>
+
+      <!-- Random starter (non-imposter) -->
+      <div class="starter-card" id="starter-card">
+        <span class="starter-label">🎯 First to describe:</span>
+        <span class="starter-name" id="starter-name">Player 1</span>
+      </div>
 
       <div class="discuss-tips">
         <div class="tip-card">
