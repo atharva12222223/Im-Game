@@ -50,13 +50,19 @@ const WORD_BANK = {
     'Dancer', 'Scientist', 'Architect', 'Singer', 'Referee', 'Cowboy'
   ],
   spicy: [
-    'Handcuffs', 'Skinny Dipping', 'Strip Poker', 'Lap Dance',
-    'Body Shot', 'One Night Stand', 'Walk of Shame', 'Friends with Benefits',
-    'Booty Call', 'Twerk', 'Pole Dance', 'Blindfold', 'Hot Tub',
-    'Lingerie', 'Hickey', 'Dirty Talk', 'Affair', 'Cougar',
-    'Sugar Daddy', 'Escort', 'Striptease', 'Mistress',
-    'Mile High Club', 'Bachelor Party', 'Body Paint', 'Whipped Cream',
-    'Champagne Room', 'Love Bite', 'Naughty Nurse', 'Spin the Bottle'
+    'Sneaky Link', 'OnlyFans', 'Morning After Pill', 'Walk of Shame',
+    'Threesome', 'Body Count', 'Netflix and Chill', 'Sugar Mommy',
+    'Freaky Friday', 'Sexting', 'Drunk Texting', 'Side Piece',
+    'Lap Dance', 'Mile High Club', 'Fake Moaning', 'Friendzone',
+    'Caught in 4K', 'Stripper Pole', 'Late Night Uber', 'Skinny Dipping',
+    'Body Shots', 'Tinder Hookup', 'Glory Hole', 'Spanking',
+    'Sugar Daddy', 'Handcuffs', 'Horny Jail', 'Edibles',
+    'Blindfold', 'Hickey', 'Dirty Talk', 'Roleplay',
+    'One Night Stand', 'Shower Sex', 'Friends with Benefits', 'Gold Digger',
+    'Strip Poker', 'French Kiss', 'Down Bad', 'Red Flag',
+    'Love Bite', 'Naughty Maid', 'Spin the Bottle', 'Stalker Ex',
+    'Late Night Facetime', 'Ghosting', 'Cuddle Buddy', 'Whipped Cream',
+    'Hot Tub Party', 'Booty Call', 'Truth or Dare', 'Twerking'
   ]
 };
 
