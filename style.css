@@ -1126,6 +1126,35 @@ h1, h2, h3 {
   font-size: 1.9rem;
 }
 
+/* Imposter Secret Hint Pill */
+.imposter-hint-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  background: var(--danger-bg);
+  border: 1.5px solid rgba(255, 69, 58, 0.45);
+  box-shadow: var(--glass-specular-top), 0 0 20px rgba(255, 69, 58, 0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  margin: 2px 0;
+  animation: fade-in-up 0.4s var(--ease-ios-fluid);
+}
+
+.hint-icon {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #ff9f0a;
+}
+
+.hint-text {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
 /* Got It Button */
 .btn-got-it-card {
   margin-top: 10px;

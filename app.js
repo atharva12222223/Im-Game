@@ -346,6 +346,15 @@ function getCombinedWordPool() {
   return [...new Set(words)];
 }
 
+function getWordCategoryInfo(word) {
+  for (const cat of CATEGORIES) {
+    if (cat.key !== 'custom' && WORD_BANK[cat.key] && WORD_BANK[cat.key].includes(word)) {
+      return cat;
+    }
+  }
+  return { key: 'custom', name: 'Custom Words', emoji: '✏️' };
+}
+
 // ==========================================
 // HOME SCREEN
 // ==========================================
@@ -498,8 +507,8 @@ function setupScreenHandlers() {
     if (game.playerCount > 3) {
       playHaptic('click');
       game.playerCount--;
-      if (game.imposterCount >= game.playerCount - 1) {
-        game.imposterCount = Math.max(1, game.playerCount - 2);
+      if (game.imposterCount > Math.min(5, game.playerCount - 2)) {
+        game.imposterCount = Math.min(5, Math.max(1, game.playerCount - 2));
       }
       updateCounterDisplays();
       renderPlayerNames();
@@ -507,7 +516,7 @@ function setupScreenHandlers() {
   });
 
   document.getElementById('btn-players-plus').addEventListener('click', () => {
-    if (game.playerCount < 15) {
+    if (game.playerCount < 25) {
       playHaptic('click');
       game.playerCount++;
       updateCounterDisplays();
@@ -524,7 +533,7 @@ function setupScreenHandlers() {
   });
 
   document.getElementById('btn-imposters-plus').addEventListener('click', () => {
-    if (game.imposterCount < game.playerCount - 2) {
+    if (game.imposterCount < 5 && game.imposterCount < game.playerCount - 2) {
       playHaptic('click');
       game.imposterCount++;
       updateCounterDisplays();
@@ -597,6 +606,7 @@ function setupScreenHandlers() {
 // ==========================================
 function startRound(wordList) {
   game.currentWord = pickRandom(wordList);
+  game.currentCategoryInfo = getWordCategoryInfo(game.currentWord);
 
   const indices = Array.from({ length: game.playerCount }, (_, i) => i);
   const shuffled = shuffle(indices);
@@ -636,11 +646,16 @@ function updateGameScreen() {
 
   if (isImposter) {
     cardBack.className = 'card-back is-imposter';
+    const catInfo = game.currentCategoryInfo || { name: 'Secret Category', emoji: '🔍' };
     cardBack.innerHTML = `
       <span class="card-role-emoji">🕵️</span>
       <span class="card-role-label">You are the</span>
       <span class="card-role-word">IMPOSTER</span>
-      <span class="card-role-hint">Figure out the word & blend in!</span>
+      <div class="imposter-hint-pill">
+        <span class="hint-icon">💡 Hint:</span>
+        <span class="hint-text">${catInfo.emoji} ${catInfo.name}</span>
+      </div>
+      <span class="card-role-hint">Blend in & figure out the word!</span>
     `;
   } else {
     cardBack.className = 'card-back';
@@ -703,14 +718,9 @@ function initDiscussion() {
 
   document.getElementById('btn-timer-toggle').textContent = 'Start Timer';
 
-  // Pick a random non-imposter player to start describing
-  const nonImposters = [];
-  for (let i = 0; i < game.playerCount; i++) {
-    if (!game.imposterIndices.includes(i)) {
-      nonImposters.push(i);
-    }
-  }
-  const starterIndex = pickRandom(nonImposters);
+  // Pick any random player to start describing (imposters can also be selected)
+  const allPlayers = Array.from({ length: game.playerCount }, (_, i) => i);
+  const starterIndex = pickRandom(allPlayers);
   const starterName = getPlayerName(starterIndex);
   document.getElementById('starter-name').textContent = starterName;
 }
